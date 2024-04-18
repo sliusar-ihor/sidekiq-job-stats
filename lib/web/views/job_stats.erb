@@ -1,0 +1,48 @@
+
+<h1>Sidekiq Job Stats</h1>
+
+<p class="intro">
+  This page displays statistics about jobs that have been executed.
+</p>
+
+<div class="fixTableHead">
+  <table class="table table-hover table-bordered table-striped">
+    <thead class="fixedHeader">
+    <tr>
+      <th class="header">Name</th>
+      <%= stat_header(:jobs_enqueued) %>
+      <%= stat_header(:jobs_performed_day) %>
+      <%= stat_header(:jobs_performed_month) %>
+      <%= stat_header(:job_rolling_avg_day) %>
+      <%= stat_header(:job_rolling_avg_month) %>
+      <%= stat_header(:longest_job_day) %>
+      <%= stat_header(:longest_job_month) %>
+      <%= stat_header(:job_memory_usage_avg_day) %>
+      <%= stat_header(:job_memory_usage_avg_month) %>
+      <%= stat_header(:peak_memory_usage_day) %>
+      <%= stat_header(:peak_memory_usage_month) %>
+    </tr>
+    </thead>
+    <tbody class="scrollContent">
+    <% @jobs.each do |job| %>
+      <tr>
+        <td>
+          <%= job.name %>
+          <a href='<%= "/sidekiq/history/job_history/#{job.name}" %>'>[history]</a>
+        </td>
+        <%= display_stat(job, :jobs_enqueued, :number_display) %>
+        <%= display_stat(job, :jobs_performed_day, :number_display) %>
+        <%= display_stat(job, :jobs_performed_month, :number_display) %>
+        <%= display_stat(job, :job_rolling_avg_day, :time_display) %>
+        <%= display_stat(job, :job_rolling_avg_month, :time_display) %>
+        <%= display_stat(job, :longest_job_day, :time_display) %>
+        <%= display_stat(job, :longest_job_month, :time_display) %>
+        <%= display_stat(job, :job_memory_usage_avg_day, :mb_display) %>
+        <%= display_stat(job, :job_memory_usage_avg_month, :mb_display) %>
+        <%= display_stat(job, :peak_memory_usage_day, :mb_display) %>
+        <%= display_stat(job, :peak_memory_usage_month, :mb_display) %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

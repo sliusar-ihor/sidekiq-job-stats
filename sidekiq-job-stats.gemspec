@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "lib/sidekiq/job/stats/version"
+require_relative "lib/sidekiq_job_stats/version"
 
 Gem::Specification.new do |spec|
   spec.name = "sidekiq-job-stats"
-  spec.version = Sidekiq::Job::Stats::VERSION
+  spec.version = SidekiqJobStats::VERSION
   spec.authors = ["isliusar"]
   spec.email = ["isliusar@liaisonedu.com"]
 
-  spec.description = "Tracks jobs performed, failed, and the duration of the last 100 jobs for each job type."
+  spec.summary = "Tracks jobs performed, failed, and the duration of the last 100 jobs for each job type."
+  spec.description = spec.summary
   spec.homepage = "https://github.com/sliusar-ihor/sidekiq-job-stats"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
@@ -30,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "sidekiq", ">= 6"
+  spec.add_dependency "get_process_mem"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

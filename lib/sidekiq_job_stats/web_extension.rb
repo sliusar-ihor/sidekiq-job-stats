@@ -10,14 +10,12 @@ module SidekiqJobStats
       app.helpers Helpers::Stats
 
       app.get '/history' do
-        ApplicantScoringWorker #todo
         @jobs = SidekiqJobStats::Statistic.find_all.sort
 
         render(:erb, File.read("#{ROOT}/views/job_stats.erb"))
       end
 
       app.get '/history/job_history/:job_class' do
-        ApplicantScoringWorker #todo
         @job_class = SidekiqJobStats::Statistic.find_all.find { |j| j.job_class.to_s == params[:job_class] }
 
         @start = 0

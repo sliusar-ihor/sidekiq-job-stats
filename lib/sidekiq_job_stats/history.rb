@@ -33,11 +33,11 @@ module SidekiqJobStats
     end
 
     def push_history(job_data)
-      return if Sidekiq.history_max_count.zero?
+      return if Sidekiq.job_stats_max_count.zero?
 
       Sidekiq.redis do |conn|
         conn.lpush(job_history_key, job_data.to_json)
-        conn.ltrim(job_history_key, 0, Sidekiq.history_max_count)
+        conn.ltrim(job_history_key, 0, Sidekiq.job_stats_max_count)
       end
     end
   end

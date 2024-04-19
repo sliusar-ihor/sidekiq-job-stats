@@ -10,14 +10,14 @@ require_relative "sidekiq_job_stats/history"
 require 'sidekiq/web'
 
 module Sidekiq
-  def self.history_max_count=(value)
-    @history_max_count = value
+  def self.job_stats_max_count=(value)
+    @job_stats_max_count = value
   end
 
-  def self.history_max_count
-    @history_max_count || 1000
+  def self.job_stats_max_count
+    @job_stats_max_count || 1000
   end
 end
 
 Sidekiq::Web.register(SidekiqJobStats::WebExtension)
-Sidekiq::Web.tabs['History'] = 'history'
+Sidekiq::Web.tabs['Job stats'] = 'job_stats'

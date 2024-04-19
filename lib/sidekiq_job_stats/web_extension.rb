@@ -9,13 +9,13 @@ module SidekiqJobStats
     def self.registered(app)
       app.helpers Helpers::Stats
 
-      app.get '/history' do
+      app.get '/job_stats' do
         @jobs = SidekiqJobStats::Statistic.find_all.sort
 
         render(:erb, File.read("#{ROOT}/views/job_stats.erb"))
       end
 
-      app.get '/history/job_history/:job_class' do
+      app.get '/job_stats/job_history/:job_class' do
         @job_class = SidekiqJobStats::Statistic.find_all.find { |j| j.job_class.to_s == params[:job_class] }
 
         @start = 0

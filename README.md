@@ -12,7 +12,7 @@ In your Gemfile add:
 gem 'sidekiq-job-stats'
 ```
 
-<img src="https://github.com/sliusar-ihor/sidekiq-job-stats/blob/main/examples/1.png" style="max-width: 100%;">
+<img src="https://github.com/sliusar-ihor/sidekiq-job-stats/blob/main/examples/2.png" style="max-width: 100%;">
 <img src="https://github.com/sliusar-ihor/sidekiq-job-stats/blob/main/examples/1.png" style="max-width: 100%;">
 
 

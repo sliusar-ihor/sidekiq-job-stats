@@ -34,6 +34,10 @@ module SidekiqJobStats
       self.job_class = job_class
     end
 
+    def <=>(other)
+      self.name <=> other.name
+    end
+
     %w[duration memory_usage history enqueued].each do |method_name|
       define_method(method_name) do
         instance_variable_get("@#{method_name}") ||

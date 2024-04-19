@@ -1,30 +1,43 @@
 module SidekiqJobStats
   class History
-    def initialize(job_data, job_class)
-      @job_data = job_data
+    attr_accessor :job_class
+
+    def initialize(job_class)
       @job_class = job_class
     end
 
-    def track
-      push_history
-    end
-
-    def self.job_history_key(job_class)
-      "stats:jobs:#{job_class}:history"
+    def track(job_data)
+      push_history(job_data)
     end
 
     def histories_recordable
       @histories_recordable || 100
     end
 
+    def job_histories(start = 0, limit = 100)
+      Sidekiq.redis do |conn|
+        conn.lrange(job_history_key, start, start + limit - 1).map { |h| JSON.parse(h) }
+      end
+    end
+
+    def histories_recorded
+      Sidekiq.redis do |conn|
+        conn.llen(job_history_key)
+      end
+    end
+
     private
 
-    def push_history
+    def job_history_key
+      "stats:jobs:#{job_class}:history"
+    end
+
+    def push_history(job_data)
       return if Sidekiq.history_max_count.zero?
 
       Sidekiq.redis do |conn|
-        conn.lpush(self.class.job_history_key(@job_class), @job_data.to_json)
-        conn.ltrim(self.class.job_history_key(@job_class), 0, Sidekiq.history_max_count)
+        conn.lpush(job_history_key, job_data.to_json)
+        conn.ltrim(job_history_key, 0, Sidekiq.history_max_count)
       end
     end
   end

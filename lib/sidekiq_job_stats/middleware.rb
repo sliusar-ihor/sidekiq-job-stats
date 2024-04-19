@@ -8,15 +8,9 @@ module SidekiqJobStats
     include Sidekiq::Component
 
     def call(_worker, msg, queue)
-      job_class = msg['class']
-
       data = {
-        enqueued_at: msg['enqueued_at'],
-        started_at: Time.now,
-        payload: msg['args'],
-        status: 'success',
-        exception: '',
-        queue: queue
+        enqueued_at: msg['enqueued_at'], started_at: Time.now, payload: msg['args'], status: 'success',
+        exception: '', queue: queue
       }
 
       begin
@@ -28,22 +22,17 @@ module SidekiqJobStats
       ensure
         data[:finished_at] = Time.now
         data[:duration] = data[:finished_at] - data[:started_at]
-
-        push_stats(data, job_class)
+        push_stats(data, msg['class'])
       end
     end
 
     private
 
     def push_stats(data, job_class)
-      Duration.new(data, job_class).track
-      Enqueued.new(data, job_class).track
+      Duration.new(job_class).track(data[:duration])
+      Enqueued.new(job_class).track
       MemoryUsage.new(job_class).track
-      History.new(data, job_class).track
-    end
-
-    def job_history_key(job_class)
-      "stats:jobs:#{job_class}:history"
+      History.new(job_class).track(data)
     end
 
     def sidekiq_job_class

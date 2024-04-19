@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq-job-stats (0.1.0)
+    sidekiq-job-stats (0.1.1)
       get_process_mem
       sidekiq (>= 6)
 

@@ -1,4 +1,6 @@
 # Sidekiq::Job::Stats
+Sidekiq Job Stats is a gem that provides functionality to track and monitor job statistics in Sidekiq, inspired by the functionality provided by the "resque-job-stats" gem.
+
 
 ## Installation
 
@@ -9,3 +11,8 @@ In your Gemfile add:
 ```ruby
 gem 'sidekiq-job-stats'
 ```
+
+<img src="https://github.com/sliusar-ihor/sidekiq-job-stats/examples/1.png" style="max-width: 100%;">
+<img src="https://github.com/sliusar-ihor/sidekiq-job-stats/examples/1.png" style="max-width: 100%;">
+
+

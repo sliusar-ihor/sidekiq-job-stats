@@ -48,7 +48,7 @@
       <tr>
         <td>
           <%= job.name %>
-          <a href='<%= "/sidekiq/job_stats/job_history/#{job.name}" %>'>[history]</a>
+          <a href='<%= "#{root_path}job_stats/job_history/#{job.name}" %>'>[history]</a>
         </td>
         <%= display_stat(job, :jobs_enqueued, :number_display) %>
         <%= display_stat(job, :jobs_performed_day, :number_display) %>

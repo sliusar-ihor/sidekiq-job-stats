@@ -1,3 +1,24 @@
+<style>
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    th {
+        position: sticky;
+        top: 0;
+        background-color: #F9F8F8;
+        border-bottom: 1px solid #EB9486;
+    }
+
+    .fixTableHead {
+        max-height: 500px;
+        overflow: auto;
+    }
+</style>
+
 <h1>Sidekiq Job Histories</h1>
 
 <p class="intro">
@@ -5,30 +26,36 @@
 </p>
 <h2><%= @job_class.job_class.to_s %></h2>
 
-<table class="table table-hover table-bordered table-striped">
-  <tr>
-    <th class="header">Enqueued time</th>
-    <th class="header">Started at</th>
-    <th class="header">Finished at</th>
-    <th class="header">Duration</th>
-    <th class="header">Arguments</th>
-    <th class="header">Success</th>
-    <th class="header">Exception</th>
-  </tr>
-  <% @histories.each do |history| %>
-    <% if history.is_a? Hash %>
-      <tr>
-        <td><span class="time"><%= Time.at(history["enqueued_at"]) %></span></td>
-        <td><span class="time"><%= history["started_at"] %></span></td>
-        <td><span class="time"><%= history["finished_at"]%></span></td>
-        <td><%= history["duration"] %>s</td>
-        <td><%= history["payload"] %></td>
-        <td><%= history["status"] %></td>
-        <td><%= history["exception"] if history["exception"] %></td>
-      </tr>
-    <% end %>
-  <% end %>
-</table>
+<div class="fixTableHead">
+    <table class="table table-hover table-bordered table-striped">
+      <thead>
+        <tr>
+          <th class="header">Enqueued time</th>
+          <th class="header">Started at</th>
+          <th class="header">Finished at</th>
+          <th class="header">Duration</th>
+          <th class="header">Arguments</th>
+          <th class="header">Success</th>
+          <th class="header">Exception</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @histories.each do |history| %>
+        <% if history.is_a? Hash %>
+          <tr>
+            <td><span class="time"><%= Time.at(history["enqueued_at"]) %></span></td>
+            <td><span class="time"><%= history["started_at"] %></span></td>
+            <td><span class="time"><%= history["finished_at"]%></span></td>
+            <td><%= history["duration"] %>s</td>
+            <td><%= history["payload"] %></td>
+            <td><%= history["status"] %></td>
+            <td><%= history["exception"] if history["exception"] %></td>
+          </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+</div>
 
 <%if @start > 0 || @start + @limit <= @size %>
   <p class='pagination'>

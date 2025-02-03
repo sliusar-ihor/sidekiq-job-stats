@@ -30,6 +30,7 @@
     <table class="table table-hover table-bordered table-striped">
       <thead>
         <tr>
+          <th class="header">Process</th>
           <th class="header">Enqueued time</th>
           <th class="header">Started at</th>
           <th class="header">Finished at</th>
@@ -43,11 +44,17 @@
       <% @histories.each do |history| %>
         <% if history.is_a? Hash %>
           <tr>
+            <td> 
+              <%= history["process"] %>
+              <% Array(history["tags"]).each do |tag| %>
+                <span class="label label-info jobtag"><%= tag %></span>
+              <% end %>
+            </td>
             <td><span class="time"><%= Time.at(history["enqueued_at"]) %></span></td>
             <td><span class="time"><%= history["started_at"] %></span></td>
             <td><span class="time"><%= history["finished_at"]%></span></td>
             <td><%= history["duration"] %>s</td>
-            <td><%= history["payload"] %></td>
+            <td><div class="args"><%= history["payload"] %></div></td>
             <td><%= history["status"] %></td>
             <td><%= history["exception"] if history["exception"] %></td>
           </tr>

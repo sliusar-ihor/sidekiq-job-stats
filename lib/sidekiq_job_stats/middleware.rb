@@ -7,12 +7,12 @@ module SidekiqJobStats
   class Middleware
     include Sidekiq::Component
 
-    def call(_worker, msg, queue)
+    def call(worker, msg, queue)
       data = {
         enqueued_at: msg['enqueued_at'], started_at: Time.now, payload: msg['args'], status: 'success',
-        exception: '', queue: queue
+        exception: '', queue: queue, process: worker._context.config.fetch(:identity), tags: msg['tags']
       }
-
+      
       begin
         yield
       rescue StandardError => e

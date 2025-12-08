@@ -19,5 +19,20 @@ module Sidekiq
   end
 end
 
-Sidekiq::Web.register(SidekiqJobStats::WebExtension)
-Sidekiq::Web.tabs['Job stats'] = 'job_stats'
+if Sidekiq::MAJOR >= 8
+  Sidekiq::Web.configure do |config|
+    config.register_extension(
+      SidekiqJobStats::WebExtension,
+      name: "job_stats",
+      tab: ["Job stats"],
+      index: "job_stats"
+    )
+  end
+else
+  Sidekiq::Web.register(SidekiqJobStats::WebExtension)
+  Sidekiq::Web.tabs['Job stats'] = 'job_stats'
+end
+
+
+
+

@@ -16,8 +16,9 @@ module SidekiqJobStats
       end
 
       app.get '/job_stats/job_history/:job_class' do
-        @job_class = SidekiqJobStats::Statistic.find_all.find { |j| j.job_class.to_s == params[:job_class] }
-
+        klass = params[:job_class] || route_params(:job_class)
+        @job_class = SidekiqJobStats::Statistic.find_all.find { |j| j.job_class.to_s == klass }
+        
         @start = 0
         @start = params[:start].to_i if params[:start]
         @limit = 100
@@ -28,8 +29,6 @@ module SidekiqJobStats
 
         render(:erb, File.read("#{ROOT}/views/job_histories.erb"))
       end
-
-      app.settings.locales << File.expand_path('locales', ROOT)
     end
   end
 end

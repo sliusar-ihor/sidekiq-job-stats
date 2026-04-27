@@ -20,6 +20,12 @@ module SidekiqJobStats
       end
     end
 
+    def all_job_histories
+      Sidekiq.redis do |conn|
+        conn.lrange(job_history_key, 0, -1).map { |h| JSON.parse(h) }
+      end
+    end
+
     def histories_recorded
       Sidekiq.redis do |conn|
         conn.llen(job_history_key)

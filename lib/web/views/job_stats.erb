@@ -1,23 +1,43 @@
+<% if respond_to?(:style_tag) %>
+  <% style_tag "job_stats/css/job_stats.css" %>
+<% else %>
 <style>
-    table {
-        text-align: left;
-        position: relative;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
+    .sortable-table .fixTableHead { max-height: 500px; overflow: auto; }
 
-    th {
+    .sortable-table th {
         position: sticky;
         top: 0;
         background-color: #F9F8F8;
-        border-bottom: 1px solid #EB9486;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
     }
 
-    .fixTableHead {
-        max-height: 500px;
-        overflow: auto;
+    .sortable-table th a {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        padding-right: 1.4em;
+        position: relative;
     }
+
+    .sortable-table th a:hover { text-decoration: underline; }
+
+    .sortable-table th a::after {
+        content: "⇅";
+        position: absolute;
+        right: 0;
+        opacity: 0.25;
+        font-size: 0.8em;
+        font-weight: normal;
+    }
+
+    .sortable-table th.sort-asc,
+    .sortable-table th.sort-desc { background-color: #EEF4FF; }
+
+    .sortable-table th.sort-asc  a::after { content: "▲"; opacity: 1; color: #4A7FD4; }
+    .sortable-table th.sort-desc a::after { content: "▼"; opacity: 1; color: #4A7FD4; }
 </style>
+<% end %>
 
 <h1>Sidekiq Job Stats</h1>
 
@@ -25,44 +45,46 @@
   This page displays statistics about jobs that have been executed.
 </p>
 
-<div class="fixTableHead">
-  <table class="table table-hover table-bordered table-striped">
-    <thead class="fixedHeader">
-    <tr>
-      <th class="header">Name</th>
-      <%= stat_header(:jobs_enqueued) %>
-      <%= stat_header(:jobs_performed_day) %>
-      <%= stat_header(:jobs_performed_month) %>
-      <%= stat_header(:job_rolling_avg_day) %>
-      <%= stat_header(:job_rolling_avg_month) %>
-      <%= stat_header(:longest_job_day) %>
-      <%= stat_header(:longest_job_month) %>
-      <%= stat_header(:job_memory_usage_avg_day) %>
-      <%= stat_header(:job_memory_usage_avg_month) %>
-      <%= stat_header(:peak_memory_usage_day) %>
-      <%= stat_header(:peak_memory_usage_month) %>
-    </tr>
-    </thead>
-    <tbody class="scrollContent">
-    <% @jobs.each do |job| %>
-      <tr>
-        <td>
-          <%= job.name %>
-          <a href='<%= "#{root_path}job_stats/job_history/#{job.name}" %>'>[history]</a>
-        </td>
-        <%= display_stat(job, :jobs_enqueued, :number_display) %>
-        <%= display_stat(job, :jobs_performed_day, :number_display) %>
-        <%= display_stat(job, :jobs_performed_month, :number_display) %>
-        <%= display_stat(job, :job_rolling_avg_day, :time_display) %>
-        <%= display_stat(job, :job_rolling_avg_month, :time_display) %>
-        <%= display_stat(job, :longest_job_day, :time_display) %>
-        <%= display_stat(job, :longest_job_month, :time_display) %>
-        <%= display_stat(job, :job_memory_usage_avg_day, :mb_display) %>
-        <%= display_stat(job, :job_memory_usage_avg_month, :mb_display) %>
-        <%= display_stat(job, :peak_memory_usage_day, :mb_display) %>
-        <%= display_stat(job, :peak_memory_usage_month, :mb_display) %>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
+<div class="sortable-table">
+  <div class="table_container">
+    <table>
+      <thead>
+        <tr>
+          <%= job_stats_sort_th("Name", "name") %>
+          <%= stat_header(:jobs_enqueued) %>
+          <%= stat_header(:jobs_performed_day) %>
+          <%= stat_header(:jobs_performed_month) %>
+          <%= stat_header(:job_rolling_avg_day) %>
+          <%= stat_header(:job_rolling_avg_month) %>
+          <%= stat_header(:longest_job_day) %>
+          <%= stat_header(:longest_job_month) %>
+          <%= stat_header(:job_memory_usage_avg_day) %>
+          <%= stat_header(:job_memory_usage_avg_month) %>
+          <%= stat_header(:peak_memory_usage_day) %>
+          <%= stat_header(:peak_memory_usage_month) %>
+        </tr>
+      </thead>
+      <tbody>
+      <% @jobs.each do |job| %>
+        <tr>
+          <td>
+            <%= job.name %>
+            <a href='<%= "#{root_path}job_stats/job_history/#{job.name}" %>'>[history]</a>
+          </td>
+          <%= display_stat(job, :jobs_enqueued, :number_display) %>
+          <%= display_stat(job, :jobs_performed_day, :number_display) %>
+          <%= display_stat(job, :jobs_performed_month, :number_display) %>
+          <%= display_stat(job, :job_rolling_avg_day, :time_display) %>
+          <%= display_stat(job, :job_rolling_avg_month, :time_display) %>
+          <%= display_stat(job, :longest_job_day, :time_display) %>
+          <%= display_stat(job, :longest_job_month, :time_display) %>
+          <%= display_stat(job, :job_memory_usage_avg_day, :mb_display) %>
+          <%= display_stat(job, :job_memory_usage_avg_month, :mb_display) %>
+          <%= display_stat(job, :peak_memory_usage_day, :mb_display) %>
+          <%= display_stat(job, :peak_memory_usage_month, :mb_display) %>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

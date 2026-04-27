@@ -25,7 +25,9 @@ if Sidekiq::MAJOR >= 8
       SidekiqJobStats::WebExtension,
       name: "job_stats",
       tab: ["Job stats"],
-      index: "job_stats"
+      index: "job_stats",
+      root_dir: File.expand_path("../web", __FILE__),
+      asset_paths: ["css"]
     )
   end
 else

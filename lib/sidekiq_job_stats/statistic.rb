@@ -14,7 +14,7 @@ module SidekiqJobStats
       :longest_job_day, :longest_job_month, to: :duration
     delegate :job_memory_usage_avg_day, :job_memory_usage_avg_month, :peak_memory_usage_day,
              :peak_memory_usage_month, to: :memory_usage
-    delegate :job_histories, :histories_recorded, to: :history
+    delegate :job_histories, :all_job_histories, :histories_recorded, to: :history
     delegate :name, to: :job_class
 
     def self.find_all

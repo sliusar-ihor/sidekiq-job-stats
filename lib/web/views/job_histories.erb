@@ -1,23 +1,56 @@
+<% if respond_to?(:style_tag) %>
+  <% style_tag "job_stats/css/job_stats.css" %>
+<% else %>
 <style>
-    table {
-        text-align: left;
-        position: relative;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
+    .sortable-table .fixTableHead { max-height: 500px; overflow: auto; }
 
-    th {
+    .sortable-table th {
         position: sticky;
         top: 0;
         background-color: #F9F8F8;
-        border-bottom: 1px solid #EB9486;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
     }
 
-    .fixTableHead {
-        max-height: 500px;
-        overflow: auto;
+    .sortable-table th a {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        padding-right: 1.4em;
+        position: relative;
     }
+
+    .sortable-table th a:hover { text-decoration: underline; }
+
+    .sortable-table th a::after {
+        content: "⇅";
+        position: absolute;
+        right: 0;
+        opacity: 0.25;
+        font-size: 0.8em;
+        font-weight: normal;
+    }
+
+    .sortable-table th.sort-asc,
+    .sortable-table th.sort-desc { background-color: #EEF4FF; }
+
+    .sortable-table th.sort-asc  a::after { content: "▲"; opacity: 1; color: #4A7FD4; }
+    .sortable-table th.sort-desc a::after { content: "▼"; opacity: 1; color: #4A7FD4; }
 </style>
+<% end %>
+
+<%
+  def history_sort_url(root, path, sort_key, current_sort, current_dir, start, limit)
+    dir = (current_sort == sort_key && current_dir == "asc") ? "desc" : "asc"
+    "#{root}#{path}?sort=#{sort_key}&direction=#{dir}&start=0&limit=#{limit}"
+  end
+
+  def pagination_url(root, path, start, limit, sort, direction)
+    url = "#{root}#{path}?start=#{start}&limit=#{limit}"
+    url += "&sort=#{sort}&direction=#{direction}" unless sort.to_s.empty?
+    url
+  end
+%>
 
 <h1>Sidekiq Job Histories</h1>
 
@@ -28,34 +61,42 @@
 
 <%if @start > 0 || @start + @limit <= @size %>
   <p class='pagination'>
-    <% if @start - @limit >= 0 %>
-      <a href="<%= root_path %><%= request.path_info %>?start=<%= [0, @start - @limit].max %>&limit=<%= @limit %>" class='less'>&laquo; less</a>
+    <% if @start > 0 %>
+      <a href="<%= pagination_url(root_path, request.path_info, [0, @start - @limit].max, @limit, @sort, @direction) %>" class='less'>&laquo; less</a>
     <% end %>
     <% if @start + @limit <= @size %>
-      <a href="<%= root_path %><%= request.path_info %>?start=<%= @start + @limit %>&limit=<%= @limit %>" class='more'>more &raquo;</a>
+      <a href="<%= pagination_url(root_path, request.path_info, @start + @limit, @limit, @sort, @direction) %>" class='more'>more &raquo;</a>
     <% end %>
   </p>
 <%end%>
 
-<div class="fixTableHead">
-    <table class="table table-hover table-bordered table-striped">
+<div class="sortable-table">
+  <div class="table_container">
+    <table>
       <thead>
         <tr>
-          <th class="header">Process</th>
-          <th class="header">Enqueued time</th>
-          <th class="header">Started at</th>
-          <th class="header">Finished at</th>
-          <th class="header">Duration</th>
-          <th class="header">Arguments</th>
-          <th class="header">Success</th>
-          <th class="header">Exception</th>
+          <% [
+            ["Process",       "process"],
+            ["Enqueued time", "enqueued_at"],
+            ["Started at",    "started_at"],
+            ["Finished at",   "finished_at"],
+            ["Duration",      "duration"],
+            ["Arguments",     "payload"],
+            ["Success",       "status"],
+            ["Exception",     "exception"],
+          ].each do |label, key| %>
+            <% css = @sort == key ? "sort-#{@direction}" : "" %>
+            <th class="<%= css %>">
+              <a href="<%= history_sort_url(root_path, request.path_info, key, @sort, @direction, @start, @limit) %>"><%= label %></a>
+            </th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
       <% @histories.each do |history| %>
         <% if history.is_a? Hash %>
           <tr>
-            <td> 
+            <td>
               <%= history["process"] %>
               <% Array(history["tags"]).each do |tag| %>
                 <span class="label label-info jobtag"><%= tag %></span>
@@ -63,7 +104,7 @@
             </td>
             <td><span class="time"><%= format_enqueued_at(history["enqueued_at"]) %></span></td>
             <td><span class="time"><%= history["started_at"] %></span></td>
-            <td><span class="time"><%= history["finished_at"]%></span></td>
+            <td><span class="time"><%= history["finished_at"] %></span></td>
             <td><%= history["duration"] %>s</td>
             <td><div class="args"><%= history["payload"] %></div></td>
             <td><%= history["status"] %></td>
@@ -73,16 +114,16 @@
       <% end %>
       </tbody>
     </table>
+  </div>
 </div>
 
 <%if @start > 0 || @start + @limit <= @size %>
   <p class='pagination'>
-    <% if @start - @limit >= 0 %>
-      <a href="<%= root_path %><%= request.path_info %>?start=<%= [0, @start - @limit].max %>&limit=<%= @limit %>" class='less'>&laquo; less</a>
+    <% if @start > 0 %>
+      <a href="<%= pagination_url(root_path, request.path_info, [0, @start - @limit].max, @limit, @sort, @direction) %>" class='less'>&laquo; less</a>
     <% end %>
     <% if @start + @limit <= @size %>
-      <a href="<%= root_path %><%= request.path_info %>?start=<%= @start + @limit %>&limit=<%= @limit %>" class='more'>more &raquo;</a>
+      <a href="<%= pagination_url(root_path, request.path_info, @start + @limit, @limit, @sort, @direction) %>" class='more'>more &raquo;</a>
     <% end %>
   </p>
 <%end%>
-

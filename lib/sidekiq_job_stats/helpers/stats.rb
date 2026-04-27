@@ -2,7 +2,15 @@ module SidekiqJobStats
   module Helpers
     module Stats
       def stat_header(stat_name)
-        "<th class='header'>" + stat_name.to_s.gsub(/_/,' ').capitalize + "</th>"
+        label = stat_name.to_s.gsub(/_/, " ").capitalize
+        job_stats_sort_th(label, stat_name.to_s)
+      end
+
+      def job_stats_sort_th(label, key)
+        dir = (@sort == key && @direction == "asc") ? "desc" : "asc"
+        css = @sort == key ? "sort-#{@direction}" : ""
+        url = "#{root_path}job_stats?sort=#{key}&direction=#{dir}"
+        "<th class='#{css}'><a href='#{url}'>#{label}</a></th>"
       end
 
       def display_stat(stat, stat_name, format)

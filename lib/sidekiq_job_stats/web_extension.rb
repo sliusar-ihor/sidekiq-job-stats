@@ -16,13 +16,15 @@ module SidekiqJobStats
       end
 
       app.get '/job_stats/job_history/:job_class' do
-        klass = params[:job_class] || route_params(:job_class)
+        klass = route_params(:job_class) || params[:job_class]
         @job_class = SidekiqJobStats::Statistic.find_all.find { |j| j.job_class.to_s == klass }
-        
+
         @start = 0
-        @start = params[:start].to_i if params[:start]
+        start_param = respond_to?(:url_params) ? url_params("start") : params[:start]
+        @start = start_param.to_i if start_param && !start_param.empty?
         @limit = 100
-        @limit = params[:limit].to_i if params[:limit]
+        limit_param = respond_to?(:url_params) ? url_params("limit") : params[:limit]
+        @limit = limit_param.to_i if limit_param && !limit_param.empty?
 
         @histories = @job_class.job_histories(@start, @limit)
         @size = @job_class.histories_recorded

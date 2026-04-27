@@ -21,6 +21,16 @@ module SidekiqJobStats
       def mb_display(num)
         num.blank? ? "" : "#{num}MB"
       end
+
+      # Sidekiq 6/7 stores enqueued_at as seconds (~1.7e9).
+      # Sidekiq 8+ stores it as milliseconds (~1.7e12).
+      def format_enqueued_at(value)
+        return "" unless value
+        ts = value.to_f
+        return value if ts.zero?
+        ts /= 1000.0 if ts > 1_000_000_000_000
+        Time.at(ts)
+      end
     end
   end
 end

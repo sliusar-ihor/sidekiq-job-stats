@@ -61,7 +61,7 @@
                 <span class="label label-info jobtag"><%= tag %></span>
               <% end %>
             </td>
-            <td><span class="time"><%= Time.at(history["enqueued_at"]) %></span></td>
+            <td><span class="time"><%= format_enqueued_at(history["enqueued_at"]) %></span></td>
             <td><span class="time"><%= history["started_at"] %></span></td>
             <td><span class="time"><%= history["finished_at"]%></span></td>
             <td><%= history["duration"] %>s</td>
